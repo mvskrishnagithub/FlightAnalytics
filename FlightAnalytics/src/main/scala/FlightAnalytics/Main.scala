@@ -27,12 +27,16 @@ object Main {
 					val rawDF = spark.read.format("csv").option("Header","true").load(".//data//flightData.csv")
 					
 				// Question 1 Find the total number of flights for each month.
+					println("===========the total number of flights for each month.============") 
+					println()
 					val monthDF = rawDF.withColumn("Month", date_format(to_date($"date", "yyyy-MM-dd"), "M"))
 					                    .withColumn("Month",col("Month").cast("integer"))
 					monthDF.groupBy("Month").count().withColumnRenamed("count", "Number of Flights").sort("Month").show()
 					
 					
-					// Question 2 Find the names of the 100 most frequent flyers.
+					// Question 2 Find the names of the 100 most frequent flyers.					
+					println("===========the names of the 100 most frequent flyers.============")  
+					println()
 					val pDF =  rawDF.groupBy("passengerId").count()
 					                .sort($"count".desc)
 					                .limit(100)
@@ -40,13 +44,14 @@ object Main {
 					                .withColumnRenamed("passengerId", "Passenger ID")
 					               					
 					val passengerDF = spark.read.format("csv").option("Header","true").load(".//data//passengers.csv")
-					
 					passengerDF.join(pDF,passengerDF("passengerId") ===  pDF("Passenger ID"),"inner")
 					           .select("Passenger ID","Number of Flights","firstName","lastName")
 					           .sort($"Number of Flights".desc)
 					           .show(100)					           
 					
-					//Quesstion 3 Find the greatest number of countries a passenger has been in without being in the UK. 
+					//Quesstion 3 Find the greatest number of countries a passenger has been in without being in the UK. 					
+					println("===========the greatest number of countries a passenger has been in without being in the UK.============")  
+					println()
 					val rawFromDF = rawDF.filter(col("from")=!="uk")
 					                     .select("passengerId","from")
 					                     .withColumnRenamed("passengerId", "Passenger ID")
@@ -67,7 +72,9 @@ object Main {
 					
 					            
 					            
-					// Question 4 Find the passengers who have been on more than 3 flights together.
+					// Question 4 Find the passengers who have been on more than 3 flights together.					
+					println("===========passengers who have been on more than 3 flights together.============")  
+					println()
 					
 					rawDF.as("rawDF1").join(rawDF.as("rawDF2"),
                       $"rawDF1.passengerId" < $"rawDF2.passengerId" &&
@@ -80,7 +87,9 @@ object Main {
                     where($"flightsTogether" >= 3).show()
 
 					            
-					//Question 5 with parameters
+					//Question 5 with parameters					
+					println("===========passengers who have been on more than 3 flights together with parameters.============")  
+					println()
             flownTogether(rawDF,4, "2017-10-04","2017-11-29").show()
             
                     
